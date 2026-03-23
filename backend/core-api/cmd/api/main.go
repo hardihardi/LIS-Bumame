@@ -13,6 +13,8 @@ import (
 	"github.com/jules/lis/backend/core-api/internal/kafka"
 	"github.com/jules/lis/backend/core-api/internal/patient"
 	"github.com/jules/lis/backend/core-api/internal/sample"
+	"github.com/jules/lis/backend/core-api/internal/result"
+	"github.com/jules/lis/backend/core-api/internal/audit"
 )
 
 func main() {
@@ -124,6 +126,48 @@ func main() {
 				c.JSON(http.StatusOK, gin.H{"status": "updated"})
 			})
 		}
+
+		results := api.Group("/results")
+		{
+			results.POST("/", func(c *gin.Context) {
+				var r result.Result
+				if err := c.BindJSON(&r); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+					return
+				}
+				if err := result.Create(context.Background(), pool, &r); err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+				kafka.Publish(context.Background(), "result.generated", r.ID.String(), r)
+				c.JSON(http.StatusCreated, r)
+			})
+			results.POST("/:id/validate", func(c *gin.Context) {
+				id, _ := uuid.Parse(c.Param("id"))
+				var input struct {
+					ValidatorID uuid.UUID `json:"validator_id"`
+				}
+				if err := c.BindJSON(&input); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+					return
+				}
+				if err := result.Validate(context.Background(), pool, id, input.ValidatorID); err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+				kafka.Publish(context.Background(), "result.validated", id.String(), gin.H{"status": "validated"})
+				c.JSON(http.StatusOK, gin.H{"status": "validated"})
+			})
+		}
+
+		api.GET("/audit-logs", func(c *gin.Context) {
+			logs, err := audit.List(context.Background(), pool)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			c.JSON(http.StatusOK, logs)
+		})
 	}
 
 	port := os.Getenv("PORT")
