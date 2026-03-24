@@ -1,18 +1,29 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Search, Filter, MoreVertical, Beaker, CheckCircle2, Clock, PlayCircle, ClipboardCheck, ChevronRight, X } from 'lucide-react';
 
 export default function SamplePage() {
-  const [samples] = useState<any[]>([
-    { sample_id: 'LAB-2024-001', patient_name: 'Siti Aminah', jenis_test: 'Hematologi Lengkap', status: 'IN_PROCESS', collected_at: '2024-03-24 08:30' },
-    { sample_id: 'LAB-2024-002', patient_name: 'Ahmad Dahlan', jenis_test: 'Kimia Klinik', status: 'COMPLETED', collected_at: '2024-03-24 09:15' },
-    { sample_id: 'LAB-2024-003', patient_name: 'Budi Santoso', jenis_test: 'Urine Lengkap', status: 'REGISTERED', collected_at: '2024-03-24 10:00' },
-    { sample_id: 'LAB-2024-004', patient_name: 'Dewi Sartika', jenis_test: 'Imunologi', status: 'VALIDATED', collected_at: '2024-03-24 10:45' },
-  ]);
-
-  const [selectedSample, setSelectedSample] = useState(samples[0]);
+  const [samples, setSamples] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedSample, setSelectedSample] = useState<any>(null);
   const [showMobileDetail, setShowMobileDetail] = useState(false);
+
+  useEffect(() => {
+    const mockSamples = [
+      { sample_id: 'LAB-2024-001', patient_name: 'Budi Santoso', jenis_test: 'Hematologi Lengkap', status: 'IN_PROCESS', collected_at: '2024-03-24 08:30' },
+      { sample_id: 'LAB-2024-002', patient_name: 'Siti Aminah', jenis_test: 'Kimia Klinik', status: 'COMPLETED', collected_at: '2024-03-24 09:15' },
+      { sample_id: 'LAB-2024-003', patient_name: 'Ahmad Dahlan', jenis_test: 'Urine Lengkap', status: 'REGISTERED', collected_at: '2024-03-24 10:00' },
+      { sample_id: 'LAB-2024-004', patient_name: 'Dewi Sartika', jenis_test: 'PCR COVID-19', status: 'VALIDATED', collected_at: '2024-03-24 10:45' },
+      { sample_id: 'LAB-2024-005', patient_name: 'Joko Widodo', jenis_test: 'Imunologi Serologi', status: 'IN_PROCESS', collected_at: '2024-03-24 11:30' },
+      { sample_id: 'LAB-2024-006', patient_name: 'Anies Baswedan', jenis_test: 'Kimia Klinik', status: 'COMPLETED', collected_at: '2024-03-24 12:00' },
+    ];
+    setTimeout(() => {
+      setSamples(mockSamples);
+      setSelectedSample(mockSamples[0]);
+      setLoading(false);
+    }, 800);
+  }, []);
 
   const handleSampleSelect = (s: any) => {
     setSelectedSample(s);
@@ -42,6 +53,8 @@ export default function SamplePage() {
     }
   };
 
+  if (loading) return <div className="h-full flex items-center justify-center"><div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>;
+
   return (
     <div className="space-y-12 animate-in slide-in-from-bottom-2 duration-700">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
@@ -57,18 +70,17 @@ export default function SamplePage() {
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-600 transition duration-300" />
           <input
             type="text"
-            placeholder="Search product..."
+            placeholder="Search through 50+ samples..."
             className="w-full pl-16 pr-8 py-5 bg-gray-50/50 border-none rounded-2xl focus:ring-2 focus:ring-blue-100 outline-none text-sm font-bold tracking-tight transition duration-300"
           />
         </div>
-        <button className="flex items-center justify-center space-x-3 px-8 py-5 bg-white border border-gray-200 rounded-2xl text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 hover:border-gray-900 transition duration-300 w-full md:w-auto">
+        <button className="flex items-center justify-center space-x-3 px-8 py-5 bg-white border border-gray-200 rounded-2xl text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition duration-300 w-full md:w-auto">
           <Filter className="w-4 h-4" />
           <span>Filters</span>
         </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 h-full">
-        {/* Desktop Table List */}
         <div className="hidden lg:block lg:col-span-2 bg-white rounded-[3.5rem] shadow-sm border border-gray-100 overflow-hidden flex flex-col">
           <div className="overflow-x-auto flex-1">
             <table className="w-full text-left border-collapse">
@@ -84,7 +96,7 @@ export default function SamplePage() {
                 {samples.map((s) => (
                   <tr
                     key={s.sample_id}
-                    className={`border-b border-gray-50 group transition cursor-pointer duration-300 ${selectedSample.sample_id === s.sample_id ? 'bg-blue-50/50' : 'hover:bg-gray-50/20'}`}
+                    className={`border-b border-gray-50 group transition cursor-pointer duration-300 ${selectedSample?.sample_id === s.sample_id ? 'bg-blue-50/50' : 'hover:bg-gray-50/20'}`}
                     onClick={() => handleSampleSelect(s)}
                   >
                     <td className="p-10">
@@ -114,13 +126,12 @@ export default function SamplePage() {
           </div>
         </div>
 
-        {/* Mobile: Card View */}
         <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-8">
            {samples.map((s) => (
              <div
                key={s.sample_id}
                onClick={() => handleSampleSelect(s)}
-               className={`bg-white p-8 rounded-[3rem] shadow-sm border border-gray-100 space-y-8 group transition duration-500 relative overflow-hidden ${selectedSample.sample_id === s.sample_id ? 'border-blue-200 bg-blue-50/20' : ''}`}
+               className={`bg-white p-8 rounded-[3rem] shadow-sm border border-gray-100 space-y-8 group transition duration-500 relative overflow-hidden ${selectedSample?.sample_id === s.sample_id ? 'border-blue-200 bg-blue-50/20' : ''}`}
              >
                 <div className="flex justify-between items-start relative z-10">
                    <div className="flex items-center space-x-6">
@@ -156,13 +167,11 @@ export default function SamplePage() {
            ))}
         </div>
 
-        {/* Right Detail Panel (Desktop) / Mobile Modal */}
         <div className="hidden lg:block lg:col-span-1">
-           <SampleDetailPanel selectedSample={selectedSample} getStatusColor={getStatusColor} />
+           {selectedSample && <SampleDetailPanel selectedSample={selectedSample} getStatusColor={getStatusColor} />}
         </div>
 
-        {/* Mobile Detail Modal */}
-        {showMobileDetail && (
+        {showMobileDetail && selectedSample && (
           <div className="lg:hidden fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
              <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[3.5rem] p-10 space-y-10 animate-in slide-in-from-bottom-full duration-500 shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
@@ -189,7 +198,7 @@ function SampleDetailPanel({ selectedSample, getStatusColor }: any) {
       <div className="relative z-10 space-y-12">
         <div>
           <h3 className="text-4xl font-black text-gray-900 tracking-tighter mb-2 uppercase">{selectedSample.sample_id}</h3>
-          <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.4em] mb-12">Document details</p>
+          <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.4em] mb-12">Medical document details</p>
         </div>
 
         <div className="space-y-10">

@@ -1,18 +1,29 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShieldCheck, MoreVertical, Search, Filter, AlertTriangle, CheckCircle2, FileText, Share2, Printer, ChevronRight, X, Clock } from 'lucide-react';
 
 export default function BlogPage() {
-  const [results] = useState<any[]>([
-    { result_id: 'RES-001', sample_id: 'LAB-2024-001', parameter: 'Hemoglobin', value: '11.5', unit: 'g/dL', range: '13.0 - 17.0', flag: 'ABNORMAL', status: 'WAITING_VALIDATION' },
-    { result_id: 'RES-002', sample_id: 'LAB-2024-002', parameter: 'Glukosa Sewaktu', value: '145', unit: 'mg/dL', range: '< 200', flag: 'NORMAL', status: 'VALIDATED' },
-    { result_id: 'RES-003', sample_id: 'LAB-2024-003', parameter: 'Kolesterol Total', value: '210', unit: 'mg/dL', range: '< 200', flag: 'CRITICAL', status: 'WAITING_VALIDATION' },
-    { result_id: 'RES-004', sample_id: 'LAB-2024-004', parameter: 'Asam Urat', value: '6.2', unit: 'mg/dL', range: '3.4 - 7.0', flag: 'NORMAL', status: 'VALIDATED' },
-  ]);
-
-  const [selectedResult, setSelectedResult] = useState(results[0]);
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedResult, setSelectedResult] = useState<any>(null);
   const [showMobileValidation, setShowMobileValidation] = useState(false);
+
+  useEffect(() => {
+    const mockResults = [
+      { result_id: 'RES-001', sample_id: 'LAB-2024-001', parameter: 'Hemoglobin', value: '11.5', unit: 'g/dL', range: '13.0 - 17.0', flag: 'ABNORMAL', status: 'WAITING_VALIDATION' },
+      { result_id: 'RES-002', sample_id: 'LAB-2024-002', parameter: 'Glukosa Sewaktu', value: '145', unit: 'mg/dL', range: '< 200', flag: 'NORMAL', status: 'VALIDATED' },
+      { result_id: 'RES-003', sample_id: 'LAB-2024-003', parameter: 'Kolesterol Total', value: '210', unit: 'mg/dL', range: '< 200', flag: 'CRITICAL', status: 'WAITING_VALIDATION' },
+      { result_id: 'RES-004', sample_id: 'LAB-2024-004', parameter: 'Asam Urat', value: '6.2', unit: 'mg/dL', range: '3.4 - 7.0', flag: 'NORMAL', status: 'VALIDATED' },
+      { result_id: 'RES-005', sample_id: 'LAB-2024-005', parameter: 'SARS-CoV-2 RNA', value: 'POSITIF', unit: '-', range: 'NEGATIF', flag: 'CRITICAL', status: 'WAITING_VALIDATION' },
+      { result_id: 'RES-006', sample_id: 'LAB-2024-006', parameter: 'pH Urine', value: '6.0', unit: '-', range: '4.5 - 8.0', flag: 'NORMAL', status: 'VALIDATED' },
+    ];
+    setTimeout(() => {
+      setResults(mockResults);
+      setSelectedResult(mockResults[0]);
+      setLoading(false);
+    }, 800);
+  }, []);
 
   const handleResultSelect = (r: any) => {
     setSelectedResult(r);
@@ -20,6 +31,8 @@ export default function BlogPage() {
       setShowMobileValidation(true);
     }
   };
+
+  if (loading) return <div className="h-full flex items-center justify-center"><div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>;
 
   return (
     <div className="space-y-12 animate-in slide-in-from-bottom-2 duration-700">
@@ -42,8 +55,8 @@ export default function BlogPage() {
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-600 transition duration-300" />
           <input
             type="text"
-            placeholder="Search blog results..."
-            className="w-full pl-16 pr-8 py-5 bg-gray-50/50 border-none rounded-2xl focus:ring-2 focus:ring-blue-100 outline-none text-sm font-bold tracking-tight transition duration-300"
+            placeholder="Search through 110+ results..."
+            className="w-full pl-16 pr-8 py-5 bg-gray-50/50 border-none rounded-2xl focus:ring-2 focus:ring-blue-100 outline-none text-sm font-bold tracking-tight transition duration-300 shadow-inner"
           />
         </div>
         <button className="flex items-center justify-center space-x-3 px-8 py-5 bg-white border border-gray-200 rounded-2xl text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition duration-300 w-full md:w-auto">
@@ -53,21 +66,20 @@ export default function BlogPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Result List */}
         <div className="space-y-8 overflow-y-auto max-h-[800px] pr-2 scrollbar-hide">
           {results.map((r) => (
             <div
               key={r.result_id}
               onClick={() => handleResultSelect(r)}
-              className={`p-10 rounded-[3.5rem] shadow-sm border group transition-all duration-500 cursor-pointer relative overflow-hidden ${selectedResult.result_id === r.result_id ? 'bg-[#D1E9FF] border-blue-200 scale-[1.02] shadow-2xl shadow-blue-100' : 'bg-white border-gray-100 hover:border-blue-200 hover:scale-[1.01]'}`}
+              className={`p-10 rounded-[3.5rem] shadow-sm border group transition-all duration-500 cursor-pointer relative overflow-hidden ${selectedResult?.result_id === r.result_id ? 'bg-[#D1E9FF] border-blue-200 scale-[1.02] shadow-2xl shadow-blue-100' : 'bg-white border-gray-100 hover:border-blue-200 hover:scale-[1.01]'}`}
             >
               <div className="flex justify-between items-start mb-8 relative z-10">
                 <div className="flex items-center space-x-6">
-                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transform transition-transform duration-500 group-hover:rotate-12 ${selectedResult.result_id === r.result_id ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-gray-100 text-gray-500'}`}>
+                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transform transition-transform duration-500 group-hover:rotate-12 ${selectedResult?.result_id === r.result_id ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-gray-100 text-gray-500'}`}>
                       <FileText className="w-7 h-7" />
                    </div>
                    <div>
-                      <p className={`text-[9px] font-black uppercase tracking-[0.3em] mb-1 ${selectedResult.result_id === r.result_id ? 'text-blue-800' : 'text-gray-400'}`}>{r.sample_id}</p>
+                      <p className={`text-[9px] font-black uppercase tracking-[0.3em] mb-1 ${selectedResult?.result_id === r.result_id ? 'text-blue-800' : 'text-gray-400'}`}>{r.sample_id}</p>
                       <h4 className="text-xl font-black text-gray-900 tracking-tighter uppercase">{r.parameter}</h4>
                    </div>
                 </div>
@@ -76,7 +88,7 @@ export default function BlogPage() {
 
               <div className="flex items-end justify-between relative z-10">
                 <div>
-                   <p className={`text-[9px] font-black uppercase tracking-[0.2em] mb-2 ${selectedResult.result_id === r.result_id ? 'text-blue-800' : 'text-gray-400'}`}>Clinical Value</p>
+                   <p className={`text-[9px] font-black uppercase tracking-[0.2em] mb-2 ${selectedResult?.result_id === r.result_id ? 'text-blue-800' : 'text-gray-400'}`}>Clinical Value</p>
                    <div className="flex items-baseline space-x-3">
                       <span className={`text-4xl font-black tracking-tighter transition-colors duration-500 ${r.flag !== 'NORMAL' ? 'text-red-600' : 'text-gray-900'}`}>{r.value}</span>
                       <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{r.unit}</span>
@@ -93,14 +105,12 @@ export default function BlogPage() {
           ))}
         </div>
 
-        {/* Desktop Validation View */}
         <div className="hidden lg:block h-full">
-           <ValidationPanel selectedResult={selectedResult} />
+           {selectedResult && <ValidationPanel selectedResult={selectedResult} />}
         </div>
       </div>
 
-      {/* Mobile Validation Sheet */}
-      {showMobileValidation && (
+      {showMobileValidation && selectedResult && (
         <div className="lg:hidden fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[3.5rem] p-10 space-y-10 animate-in slide-in-from-bottom-full duration-500 shadow-2xl">
              <div className="flex justify-between items-center mb-4">
