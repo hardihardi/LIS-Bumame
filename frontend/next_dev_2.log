@@ -29,3 +29,18 @@
   20 |       console.error(err); (app/patients/page.tsx:20:15)
  GET /samples 200 in 762ms (next.js: 718ms, application-code: 44ms)
  GET /results 200 in 743ms (next.js: 700ms, application-code: 43ms)
+✓ Compiled in 2.7s
+✓ Compiled in 439ms
+ GET / 200 in 1866ms (next.js: 681ms, application-code: 1185ms)
+ GET /patients 200 in 133ms (next.js: 72ms, application-code: 61ms)
+ GET /samples 200 in 110ms (next.js: 52ms, application-code: 58ms)
+ GET /results 200 in 80ms (next.js: 35ms, application-code: 45ms)
+ GET / 200 in 102ms (next.js: 7ms, application-code: 95ms)
+ GET / 200 in 574ms (next.js: 104ms, application-code: 469ms)
+ GET /patients 200 in 81ms (next.js: 13ms, application-code: 68ms)
+ GET /samples 200 in 64ms (next.js: 7ms, application-code: 57ms)
+ GET /results 200 in 52ms (next.js: 9ms, application-code: 43ms)
+ GET / 200 in 222ms (next.js: 5ms, application-code: 217ms)
+ GET /patients 200 in 232ms (next.js: 8ms, application-code: 224ms)
+ GET /samples 200 in 190ms (next.js: 4ms, application-code: 186ms)
+ GET /results 200 in 235ms (next.js: 7ms, application-code: 228ms)
